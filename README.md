@@ -1,7 +1,7 @@
 # ManRunProject
 
 This Project is For Computational Fabrication Course
-Chulalongkorn University
+of Chulalongkorn University
 
 If you want to create model like I did,
 this is a useful link:
