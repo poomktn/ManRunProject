@@ -18,7 +18,8 @@ translate([0,2,1]){
 sphere(.2,center=true);}
 sphere(.2,center=true);}}
 
-module core(){
+//Head
+module Head(){
 //head
 color("SandyBrown"){    
  difference(){
@@ -49,8 +50,10 @@ sphere(.56,center=true);}
 scale([.9,1.1,1]){
 translate([-.4,0,1]){    
 sphere(3.8,center=true);    
-    } } }
-
+    } } } }
+    
+//body
+module Body(){
 color("FloralWhite"){
 //body and shoulder
 hull(){
@@ -72,29 +75,29 @@ minkowski(){
 cube([2,8,16],center=true);
 cylinder(r=1,h=0.1);} } } } }
 
-//arm
+//appendage
 module appendage(x){
 color("Floralwhite"){
-//shoulder 
-translate([3*x,0,3*x]){
-sphere(1.2*x);} 
-//elbow and lower arm
-hull(){
-sphere(x);
-translate([0,0,-2.5*x]){
-cylinder(r=1.2*x,h=4*x,center = true);} } 
-//elbow and upper arm
+
+//moving joint
+translate([0,0,5*x]){
+sphere(1.5*x);}
+
+//upper part and joint
+translate([0,0,5*x]){
 rotate([0,45,0]){
-hull(){
-sphere(x);
-translate([0,0,2.5*x]){
-cylinder(r=1.2*x,h=4*x,center = true);} } } }
+cylinder(r=1.5*x,h=5*x);
+translate([0,0,5*x]){
+sphere(1.5*x); } } }
+
+//lower part
+cylinder(r=1.5*x,h=5*x); }
+
 //wrist
 color("SandyBrown"){
-translate([0,0,-4.5*x]){
-scale([1,.5,1])sphere(1.15*x);} }
+scale([1,.5,1])sphere(1.5*x);}
 }
-
+//Hand
 module hand(q){
 color("SandyBrown"){
 x=0.2*q; y=1.3*q; z=1.6*q; w =2*q; e=0.4*q;
@@ -157,48 +160,111 @@ translate([0,0,-z*1]){
 cylinder(r=.5*q,h=.5*q,center = true);} }} }
     }
 }
-//head and body
-core();
+
+//merge hand and appendage
+module arm(){
+    appendage(1);
+    translate([0,0,-1.8]){
+    rotate([0,180,-90]){
+    hand(.9);}}
+    }
+
+//MoveHead
+module RotateHead(x){
+if(x == 0){rotate([0,0,45]){
+Head();}}
+else if(x == 3){rotate([0,0,-45]){
+Head();}}
+else if(x == 1 || x==2){rotate([0,0,0]){
+Head();}}
+}
+
+//MoveArm
+module RotateArm(x){
+if(x==0){
+rotate([0,-90,0])
+translate([-4,0,-9])
+arm();}
+
+else if(x==1){
+rotate([0,-45,0])
+translate([-4,0,-9])
+arm();}
+
+else if(x==2){
+rotate([0,0,0])
+translate([-4,0,-9])
+arm();}
+
+else if(x==3){
+rotate([0,45,0])
+translate([-4,0,-9])
+arm();}
+}
+
+//merge and appendage shoe
+module Leg(){
+    color("MidnightBlue"){
+    appendage(1.2);}
+    //shoe
+    color("DarkSlateGray"){
+    translate([-1.6,0,-.8]){
+    scale([2,1,.6]){sphere(2);}
+    } } }
+
+//MoveLeg   
+module RotateLeg(x){
+if(x==0){
+rotate([0,-90,0])
+translate([-4.8,0,-10.8])
+Leg();}
+
+else if(x==1){
+rotate([0,-45,0])
+translate([-4.8,0,-10.8])
+Leg();}
+
+else if(x==2){
+rotate([0,0,0])
+translate([-4.8,0,-10.8])
+Leg();}
+
+else if(x==3){
+rotate([0,45,0])
+translate([-4.8,0,-10.8])
+Leg();}
+}
+Body();
+//RightHand
+module RightHand(x){
+translate([0,-6.5,-6.5]){
+rotate([-20,0,0]){
+RotateArm(x);}}}
+//LeftHand
+module LeftHand(x){
+translate([0,6.5,-6.5]){
+rotate([20,0,0]){
+RotateArm(3-x);}}}
+
+//RightLeg
+module RightLeg(x){
+translate([0,-4.5,-22]){
+rotate([10,0,180]){RotateLeg(x);} }
+}
+
+//Leftleg
+module LeftLeg(x){
+translate([0,4.5,-22]){
+rotate([-10,0,180]){RotateLeg(3-x);}
+} }
+
+//Run Moveset
+module MoveSet(x){
+    RotateHead(x);
+    RightHand(x);
+    LeftHand(x);
+    RightLeg(x);
+    LeftLeg(x);
+    }
     
-//right arm
-translate([3,-8,-13.5]){
-rotate([-30,-75,15]){
-appendage(1.5); } } 
-
-//left arm
-translate([-5,8,-11.5]){
-rotate([30,0,0]){
-appendage(1.5); } } 
-
-//right leg
-color("MidnightBlue"){
-translate([-4,-4,-27]){
-rotate([0,210,0]){
-appendage(1.5); } } }
-
-//left leg
-color("MidnightBlue"){
-translate([3.8,4.5,-27]){
-rotate([0,150,15]){
-appendage(1.5); } } }
-
-//left hand
-translate([-5,12.5,-19.5]){
-rotate([180,-20,90]){
-hand(.9);}} 
-
-//right hand
-translate([12,-10.5,-15]){
-rotate([90,0,75]){
-hand(.9);}} 
-
-//left shoe
-color("DimGray"){
-translate([3.8,4.5,-35]){
-rotate([0,15,15]){
-scale([2,1,.6]){sphere(2);}}} 
-
-//right shoe
-translate([-10.5,-4,-31]){
-rotate([0,75,-15]){
-scale([2,1,.6]){sphere(2);}}} }
+MoveSet(0);
