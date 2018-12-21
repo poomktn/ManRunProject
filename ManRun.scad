@@ -18,7 +18,7 @@ translate([0,2,1]){
 sphere(.2,center=true);}
 sphere(.2,center=true);}}
 
-//Head
+//Head and Face
 module Head(){
 //head
 color("SandyBrown"){    
@@ -30,7 +30,7 @@ eye();}
 translate([3.5,1.5,1]){
 eye();}
 }
-//Mouth
+//mouth
 translate([3,0,-2.6]){
 smile();} }
 
